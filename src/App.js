@@ -1,11 +1,17 @@
 import React, { Component } from 'react';
 import { View } from 'react-native';
 import firebase from 'firebase';
-import { Header } from './components/common';
+import {
+  Header,
+  Button,
+  Card,
+  CardSection,
+  Spinner,
+ } from './components/common';
 import LoginForm from './components/LoginForm';
 
 class App extends Component {
-  state = { loggedIn: false };
+  state = { loggedIn: null };
   componentWillMount() {
     firebase.initializeApp(
       {
@@ -24,11 +30,35 @@ class App extends Component {
     });
   }
 
+  renderContent() {
+    switch (this.state.loggedIn) {
+      case true:
+        return (
+          <Card>
+            <CardSection>
+              <Button
+                text={'Log Out'}
+                onPress={() => firebase.auth().signOut()}
+              />
+            </CardSection>
+          </Card>
+        );
+      case false:
+        return <LoginForm />;
+      default:
+        return (
+          <View
+            style={ {flex: 1} }>
+            <Spinner />
+          </View>);
+    }
+  }
+
   render() {
     return (
-      <View>
+      <View style={ {flex: 1} }>
         <Header headerText={'Authentication'} />
-        <LoginForm />
+        {this.renderContent()}
       </View>
     );
   }
